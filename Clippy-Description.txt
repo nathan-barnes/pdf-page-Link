@@ -1,0 +1,8 @@
+Goal of Clippy
+
+Base
+- add links from details to detials on pages and back
+
+check for 
+- text?
+--Spell check
