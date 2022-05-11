@@ -2,8 +2,8 @@
 # https://pythonhosted.org/PyPDF2/PdfFileWriter.html
 # https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/pdf_reference_archives/PDFReference.pdf
 
-from PyPDF2 import PdfFileWriter, PdfFileReader
-from PyPDF2.generic import RectangleObject
+# from PyPDF2 import PdfFileWriter, PdfFileReader
+# from PyPDF2.generic import RectangleObject
 from os import path
 import fitz 
 import json
@@ -12,14 +12,22 @@ from spellchecker import SpellChecker
 import csv
 import itertools
 import re
+# from time import sleep
+import sys
+sys.path.append("C:\Python38\Lib\site-packages")
 
-pdfLink = r"SCOTTSDALE_ZAHNER_100CD_SET_V3.pdf"
+# pdfLink = r"SCOTTSDALE_ZAHNER_100CD_SET_V3.pdf"
+# pdfLink = r"C:\Users\nbarnes\Documents\GitHub\pdf-page-Link\SCOTTSDALE_ZAHNER_100CD_SET_V3.pdf"
+pdfLinkFolder = sys.argv[1]
+pdfName = sys.argv[2]
+print (pdfLinkFolder,pdfName)
+pdfLink = pdfLinkFolder + pdfName + '.pdf'
 
 # ------- using fitz to read the text and search through to find items
 # ------- PDFwriter to writ stuff
 
-pdf_writer = PdfFileWriter()
-pdf_reader = PdfFileReader(open(pdfLink, 'rb'))
+# pdf_writer = PdfFileWriter()
+# pdf_reader = PdfFileReader(open(pdfLink, 'rb'))
 # pdf_reader = PdfFileReader(open('Starter9.pdf', 'rb'))
 # pdf_reader = PdfFileReader('Starter9_Blue.pdf')
 
@@ -28,18 +36,38 @@ doc = fitz.open(pdfLink)
 
 
 # get page dimensions
-x1, y1, x2, y2 = pdf_reader.getPage(0).mediaBox
-print(f'x1, x2: {x1, x2}\ny1, y2: {y1,y2}')
+# x1, y1, x2, y2 = pdf_reader.getPage(0).mediaBox
+# print(f'x1, x2: {x1, x2}\ny1, y2: {y1,y2}')
 
 
-print("page count is {0}".format(doc.page_count))
-print("page entity is ", doc)
+# print("page count is {0}".format(doc.page_count))
+# print("page entity is ", doc)
 
-SearchText = ['XC-001','XC-A101','XC-D101', 'XC-A201', 'XC-A501','XC-A502','XC-A503','XC-A504','XC-A505','XC-A506', 'XC-D501', 'XC-D502']
-excludeList = ['www.azahner.com', 'WWW.AZAHNER.COM', 'PURLIN', 'ZAHNER', 'AS-BUILT', 'ZEPP', 'Z-CLIP', 'TYP.','TYP', 'JAMBS', 'KERFED', 'SHEATHED', 'SHEATHING', 'HARDSCAPE', 'LAKEFLATO', '24X36"', 'DG04']
+# SearchText = ['XC-001','XC-A101','XC-D101', 'XC-A201', 'XC-A501','XC-A502','XC-A503','XC-A504','XC-A505','XC-A506', 'XC-D501', 'XC-D502']
+SearchText = sys.argv[3]
+#------clean sys args--------------------
+SearchText = SearchText.replace("'", '')
+SearchText = SearchText.replace(" ", '')
+SearchText = SearchText.split(",")
+# print (SearchText)
+
+excludeListInput = sys.argv[4]
+#------clean sys args--------------------
+excludeListInput = excludeListInput.replace("'", '')
+excludeListInput = excludeListInput.replace(" ", '')
+excludeListInput = excludeListInput.split(",")
+print (excludeListInput)
+
+#----useful to test input sys args
+# file2 = open(r"C:\Users\nbarnes\Documents\GitHub\pdf-page-Link\output.txt", "w") 
+# file2.writelines(SearchText)
+# file2.close()
+
+excludeList = ['www.azahner.com', 'WWW.AZAHNER.COM', 'PURLIN', 'ZAHNER', 'AS-BUILT', 'ZEPP', 'Z-CLIP', 'TYP.','TYP', 'JAMBS', 'KERFED', 'SHEATHED', 'SHEATHING', 'HARDSCAPE', 'LAKEFLATO', '24X36"', 'DG04'] + excludeListInput
 callouts = []
 details = []
 
+########
 def misspelledWords ():
     textList = page.get_text('text').split('\n')
 
@@ -170,14 +198,15 @@ for eachDetailObj in detailLinkOkj:
                 # print ('about to link', eachDestPage, detailPage, everyRect)
 
                 # lnks = {'kind': 1, 'xref': 864, 'from': everyRect, 'type': 'goto', 'page': pages[0], 'to': fitz.Point(100.0, 200.0), 'zoom': 0.0}
-                lnks = {'kind': 1, 'xref': 864, 'from': everyRect, 'type': 'goto', 'page': eachDestPage, 'to': fitz.Point(100.0, 200.0), 'zoom': 1.0}
+                lnks = {'kind': 1, 'xref': 864, 'from': everyRect, 'type': 'goto', 'page': eachDestPage, 'to': fitz.Point(100.0, 200.0), 'zoom': 0.0}
                 pageToLink.insert_link(lnks)
                 page = doc.reload_page(pageToLink)
         
 
 
  
-doc.ez_save('pdfLinks.pdf')
+# doc.ez_save(pdfLinkFolder + pdfName + '_Belted.pdf')
+doc.ez_save(pdfLink[:-4] + '_Belted.pdf')
 
 # --- spell check---------------------------------------------------------------
 
@@ -211,7 +240,8 @@ for page in doc:
         # print(eachtext)
         #  any("abc" in s for s in some_list):
         if any(s in eachtext for s in searchCharInit):
-            print( eachtext)
+            # print( eachtext)
+            x=1
         else:
             cleanedPageText.append(eachtext)
             
@@ -325,3 +355,6 @@ writeList = list(map(list, itertools.zip_longest(*misspelledList, fillvalue=None
 # print('report.csv', pageHeader, writeList)
 writeCsv(pdfLink[:-4]+'_report.csv', pageHeader, writeList )
 
+
+
+# sleep(10)
