@@ -36,7 +36,7 @@ print("page count is {0}".format(doc.page_count))
 print("page entity is ", doc)
 
 SearchText = ['XC-001','XC-A101','XC-D101', 'XC-A201', 'XC-A501','XC-A502','XC-A503','XC-A504','XC-A505','XC-A506', 'XC-D501', 'XC-D502']
-excludeList = ['www.azahner.com', 'WWW.AZAHNER.COM', 'PURLIN', 'ZAHNER', 'AS-BUILT', 'ZEPP', 'Z-CLIP', 'TYP.','TYP', 'JAMBS', 'KERFED', 'LAKEFLATO', '24X36"', 'DG04']
+excludeList = ['www.azahner.com', 'WWW.AZAHNER.COM', 'PURLIN', 'ZAHNER', 'AS-BUILT', 'ZEPP', 'Z-CLIP', 'TYP.','TYP', 'JAMBS', 'KERFED', 'SHEATHED', 'SHEATHING', 'HARDSCAPE', 'LAKEFLATO', '24X36"', 'DG04']
 callouts = []
 details = []
 
@@ -125,7 +125,7 @@ for detailName in SearchText:
     
 # print ('no idea', detailLinkOkj)
 for page in doc:
-    print('-----------page', page)
+    # print('-----------page', page)
     
     for detailName in SearchText:
         
@@ -167,10 +167,10 @@ for eachDetailObj in detailLinkOkj:
             for everyRect in detailRect:
                 pageToLink = doc[detailPage]
                 # print('pageToLink', pageToLink)
-                print ('about to link', eachDestPage, detailPage, everyRect)
+                # print ('about to link', eachDestPage, detailPage, everyRect)
 
                 # lnks = {'kind': 1, 'xref': 864, 'from': everyRect, 'type': 'goto', 'page': pages[0], 'to': fitz.Point(100.0, 200.0), 'zoom': 0.0}
-                lnks = {'kind': 1, 'xref': 864, 'from': everyRect, 'type': 'goto', 'page': eachDestPage, 'to': fitz.Point(100.0, 200.0), 'zoom': 0.5}
+                lnks = {'kind': 1, 'xref': 864, 'from': everyRect, 'type': 'goto', 'page': eachDestPage, 'to': fitz.Point(100.0, 200.0), 'zoom': 1.0}
                 pageToLink.insert_link(lnks)
                 page = doc.reload_page(pageToLink)
         
@@ -185,10 +185,13 @@ misspelledList = []
 pageHeader = []
 
 print("page text")
+# print (doc.metadata)
+
 for page in doc:
 # page = doc[0]
     ### SEARCH
     print('-----------page', page)
+    # print (page.clean_contents())
     pageHeader.append('page num {0}'.format(page.number))
     # textToCheck = page.get_text('text')
     textListClean =[]
@@ -197,31 +200,26 @@ for page in doc:
     textToIgnore = SearchText + excludeList
     textToIgnoreList = []
     textToIgnoreList2 = []
-    searchCharInit = ["$","@","&","Â","©",",", "ï","¿","|", "(", ")", "'",'½', 'ï', '�' ] 
+    searchCharInit = ["$","@","Â","©", "ï","¿","|",  "'",'½', 'ï', '�', '©' ] 
 
-    pageText = page.get_text('text')
+    pageText = page.get_text('text').split('\n')
     cleanedPageText = []
+    # print(pageText)
+    # print(len(pageText))
     for eachtext in pageText:
-        for eachChar in searchCharInit:
-                if (eachChar not in eachtext):
-                    cleanedPageText.append(eachtext)
-
-    print(pageText)
-    # textList = page.get_text('text').split('\n')
-    textListMultiClean = []
-    for eachMultiStr in cleanedPageText:
-        splitText = eachMultiStr.split('\n')
-        if(len(splitText)>1):
-            for i in splitText:
-                textListMultiClean.append(i)
+    # for eachText in cleanedPageText:
+        # print(eachtext)
+        #  any("abc" in s for s in some_list):
+        if any(s in eachtext for s in searchCharInit):
+            print( eachtext)
         else:
-            textListMultiClean.append(splitText[0])
+            cleanedPageText.append(eachtext)
+            
 
-    # print (textListMultiClean)
-    # textList = page.get_text('text').split('\n')
 
     # for each in textList:
-    for each in textListMultiClean:
+    # for each in textListMultiClean:
+    for each in cleanedPageText:
         # print (len(each))
         if (len(each) > 0):
             # print (each)
@@ -236,23 +234,23 @@ for page in doc:
     # print (textListClean)
     for textRemove in textListClean:
     # for textRemove in textList:
-        print(textRemove)
+        # print(textRemove)
 
         if (textRemove not in textToIgnore):
             # print (textRemove, textToIgnore)
             textToIgnoreList.append(textRemove)
 
-    print (textToIgnoreList)
+    # print (textToIgnoreList)
     spell = SpellChecker(distance=1)
-    # misspelled = spell.unknown(textToIgnoreList)
-    misspelledLister = []
-    spezzed = spell.known(textToIgnoreList)
-    for eachword in textToIgnoreList:
-        if eachword not in spezzed:
-            misspelledLister.append(eachword)
+    misspelled = spell.unknown(textToIgnoreList)
+    # misspelledLister = []
+    # spezzed = spell.known(textToIgnoreList)
+    # for eachword in textToIgnoreList:
+    #     if eachword not in spezzed:
+    #         misspelledLister.append(eachword)
 
     # misspelled2 = list(misspelled)
-    print (misspelledLister)
+    # print (misspelledLister)
 
     # something about this is clumsy
     # for stringy in misspelled:
@@ -304,11 +302,18 @@ for page in doc:
         if textRemove2.lower() not in textToIgnore:
             textToIgnoreList2.append(textRemove2)
 
+    def myFunc(e):
+        return len(e)
     misspelledcleaned = spell.unknown(textToIgnoreList2)
+    listToSort = list(misspelledcleaned)
+    listToSort.sort(key=myFunc)
+
+    # misspelledcleaned.sort()
 
     # misspelled = spell.unknown(textToIgnoreList)
     # enumerate_list = [(index, element) for index, element in enumerate(misspelled)]
-    misspelledList.append(list(misspelledcleaned))
+    # misspelledList.append(list(misspelledcleaned))
+    misspelledList.append(listToSort)
     # misspelledList.append(new_string)
     # misspelledList.append(misspelled)
 
