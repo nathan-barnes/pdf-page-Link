@@ -1,0 +1,114 @@
+<html>
+<head>
+    <script src="https://cdn01.boxcdn.net/platform/preview/2.82.0/en-US/preview.js"></script>
+    
+</head>
+<body>
+    <!-- <link href="https://cdn01.boxcdn.net/platform/preview/2.82.0/en-US/preview.css" rel="stylesheet" type="text/css"> -->
+    <!-- <script src="https://cdn01.boxcdn.net/polyfills/core-js/2.5.3/core.min.js"></script> -->
+    <!-- <script src="https://cdn01.boxcdn.net/platform/preview/2.82.0/en-US/preview.js"></script> -->
+    <!-- <script src="https://cdn01.boxcdn.net/platform/preview/2.81.0/en-US/preview.js"></script> -->
+    <!-- <script src="https://codepen.io/box-platform/pen/xBRLmP.js"></script> -->
+    <!-- <a id="mylink" href="https://azahner.app.box.com/file/956885761737">linky</a>         -->
+    <!-- <div  class="preview-container"></div> -->
+
+    <!-- polyfill.io only loads the polyfills your browser needs -->
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=es6,Intl"></script>
+    <!-- Alternatively, use polyfill hosted on the Box CDN
+    <script src="https://cdn01.boxcdn.net/polyfills/core-js/2.5.3/core.min.js"></script>
+    -->
+
+    <!-- Latest version of the explorer css for your locale -->
+    <link
+      rel="stylesheet"
+      href="https://cdn01.boxcdn.net/platform/elements/{VERSION}/en-US/explorer.css"
+    />
+
+    
+    <script type="text/javascript">
+
+        
+        const link = document.createElement("a");
+        link.href = "https://azahner.app.box.com/file/956885761737";
+        link.click();
+
+
+        const Box = window.Box
+
+
+        var preview = new Box.Preview();
+        preview.show(null, null, {
+                container: '.preview-container',
+                showDownload: true
+            });
+        console.log('preview', preview)
+            // preview.show(configData.FILE_ID, configData.ACCESS_TOKEN, {
+            //     container: '.preview-container',
+            //     showDownload: true
+            // });
+
+            // Set page to 2 after load
+            preview.addListener('load', function(data) {
+                var viewer = data.viewer;
+                viewer.setPage(2);
+            });
+
+
+          //Get a reference to the link on the page
+          // with an id of "mylink"
+        //   var a = document.getElementById("mylink");
+
+        // Wait for the page to load first
+        // window.onload = function() {
+
+            
+
+        //     var preview = new Box.Preview();
+        //     // preview.show(configData.FILE_ID, configData.ACCESS_TOKEN, {
+        //     //     container: '.preview-container',
+        //     //     showDownload: true
+        //     // });
+
+        //     // Set page to 2 after load
+        //     preview.addListener('load', function(data) {
+        //         var viewer = data.viewer;
+        //         viewer.setPage(2);
+        //     });
+
+
+        //   //Get a reference to the link on the page
+        //   // with an id of "mylink"
+        //   var a = document.getElementById("mylink");
+
+        //   //Set code to run when the link is clicked
+        //   // by assigning a function to "onclick"
+        // //   a.onclick = function() {
+
+
+
+        // //     var preview = new Box.Preview();
+        // //     preview.show(configData.FILE_ID, configData.ACCESS_TOKEN, {
+        // //         container: '.preview-container',
+        // //         showDownload: true
+        // //     });
+
+        // //     // Set page to 2 after load
+        // //     preview.addListener('load', function(data) {
+        // //         var viewer = data.viewer;
+        // //         viewer.setPage(2);
+        // //     });
+        // //     // Your code here...
+
+        // //     //If you don't want the link to actually 
+        // //     // redirect the browser to another page,
+        // //     // "google.com" in our example here, then
+        // //     // return false at the end of this block.
+        // //     // Note that this also prevents event bubbling,
+        // //     // which is probably what we want here, but won't 
+        // //     // always be the case.
+        // //     return false;
+        // //   }
+        // }
+    </script>
+</body>
+</html>

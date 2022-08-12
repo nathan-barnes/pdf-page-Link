@@ -1,13 +1,16 @@
+#Description
+#Belt - cook, conversationlist, and keeps my pants up
+
 # Resources
 # https://pythonhosted.org/PyPDF2/PdfFileWriter.html
 # https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/pdf_reference_archives/PDFReference.pdf
 
 # from PyPDF2 import PdfFileWriter, PdfFileReader
 # from PyPDF2.generic import RectangleObject
+import fitz #need to install
+from spellchecker import SpellChecker #need to install
 from os import path
-import fitz 
 import json
-from spellchecker import SpellChecker
 
 import csv
 import itertools
@@ -56,7 +59,7 @@ excludeListInput = sys.argv[4]
 excludeListInput = excludeListInput.replace("'", '')
 excludeListInput = excludeListInput.replace(" ", '')
 excludeListInput = excludeListInput.split(",")
-print (excludeListInput)
+# print (excludeListInput)
 
 #----useful to test input sys args
 # file2 = open(r"C:\Users\nbarnes\Documents\GitHub\pdf-page-Link\output.txt", "w") 
@@ -65,7 +68,7 @@ print (excludeListInput)
 
 excludeList = ['www.azahner.com', 'WWW.AZAHNER.COM', 'PURLIN', 'ZAHNER', 'AS-BUILT', 'ZEPP', 'Z-CLIP', 'TYP.','TYP', 'JAMBS', 'KERFED', 'SHEATHED', 'SHEATHING', 'HARDSCAPE', 'LAKEFLATO', '24X36"', 'DG04'] + excludeListInput
 callouts = []
-details = []
+detailsNotFound = []
 
 ########
 def misspelledWords ():
@@ -88,6 +91,8 @@ def foundDetail (page, searchTxt):
                 rect.append(r)
                 # print (w)
                 # page.add_underline_annot(r)  # underline
+
+    
     
     return page.number, rect
 
@@ -126,11 +131,14 @@ def notFound():
 
 
 
-def writeCsv(pathToFile, header, data):
+def writeCsv(pathToFile, missing, missingName, header, data):
     # open the file in the write mode
     with open(pathToFile, 'w', encoding='UTF8', newline='') as f:
         # create the csv writer
         writer = csv.writer(f)
+
+        writer.writerow(missing)
+        writer.writerow(missingName)
         # write the header
         writer.writerow(header)
 
@@ -144,8 +152,10 @@ def writeCsv(pathToFile, header, data):
 detpageNumber= -1
 detailRect = []
 pages = []
-detials = []
+detialsFound = []
 detailLinkOkj = {}
+
+
 
 for detailName in SearchText:
     detailLinkOkj[detailName] = {'toPages':[], 'destPage':[]}
@@ -169,8 +179,17 @@ for page in doc:
 
         if(len(detailRect)>0):
             # detials.append({pgNum: detailRect})
+            detialsFound.append(detailName)
             detailLinkOkj[detailName]['destPage'].append({pgNum: detailRect})
     
+#check if all detiails not found
+for detailName in SearchText:
+    
+    if (detailName not in detialsFound): #find any detials not located. 
+        # print(detailName)
+        detailsNotFound.append(detailName)
+
+
 # print ('no idea', detailLinkOkj)
 # print ( 'page report', pages, detials)
 #----add links to pages
@@ -353,7 +372,7 @@ for page in doc:
 # writeCsv('report.csv', pageHeader, zip(*misspelledList)  )
 writeList = list(map(list, itertools.zip_longest(*misspelledList, fillvalue=None)))
 # print('report.csv', pageHeader, writeList)
-writeCsv(pdfLink[:-4]+'_report.csv', pageHeader, writeList )
+writeCsv(pdfLink[:-4]+'_report.csv', ['detailsNotFound'], detailsNotFound, pageHeader, writeList )
 
 
 

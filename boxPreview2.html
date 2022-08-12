@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <title>Box Content Preview Demo</title>
+
+    <!-- polyfill.io only loads the polyfills your browser needs -->
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise"></script>
+    <!-- Alternatively, use polyfills hosted on the Box CDN
+  <script src="https://cdn01.boxcdn.net/polyfills/bluebird/3.5.1/bluebird.min.js"></script>
+  -->
+
+    <script src="https://cdn01.boxcdn.net/platform/preview/2.81.0/en-US/preview.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn01.boxcdn.net/platform/preview/2.81.0/en-US/preview.css"
+    />
+  </head>
+  <body>
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-analytics.js";
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+    
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyClYmEG5HSVXDYyvqE2LuHPuT9SHgovkE4",
+        authDomain: "proving-groundz.firebaseapp.com",
+        projectId: "proving-groundz",
+        storageBucket: "proving-groundz.appspot.com",
+        messagingSenderId: "660872992357",
+        appId: "1:660872992357:web:6941961e73f12bc3be188c",
+        measurementId: "G-7S8PECDJY1"
+      };
+    
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+    </script>
+    
+    <div class="preview-container" style="height:100vh; width:100%;"></div>
+
+
+    <script>
+      var preview = new Box.Preview();
+      preview.show("956451306639", "u6RIpm2DkUm9i7cnEtbIdpshc71Pr9Fe", {
+        container: ".preview-container",
+        // showDownload: true,
+      });
+
+
+
+      preview.addListener('load', function(data) {
+        var viewer = data.viewer;
+        viewer.setPage(2);
+        });
+    </script>
+
+
+  </body>
+</html>
