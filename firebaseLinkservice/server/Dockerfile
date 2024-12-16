@@ -1,15 +1,17 @@
-# 1 
+# Python image to use.
 FROM python:3.8
 
-# 2
-RUN pip install Flask gunicorn
-
-# 3
-COPY src/ /app
+# Set the working directory to /app
 WORKDIR /app
 
-# 4
-ENV PORT 8080
+# copy the requirements file used for dependencies
+COPY requirements.txt .
 
-# 5
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 app:app
+# Install any needed packages specified in requirements.txt
+RUN pip install --trusted-host pypi.python.org -r requirements.txt
+
+# Copy the rest of the working directory contents into the container at /app
+COPY . .
+
+# Run app.py when the container launches
+ENTRYPOINT ["python", "app.py"]

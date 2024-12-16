@@ -1,30 +1,36 @@
-from flask import Flask
-import ghhops_server as hs
+"""
+A sample Hello World server.
+"""
+import os
 
-#Description
-#Belt - cook, conversationlist, and keeps my pants up
-
-# Pip install specific versions of multiple packages:
-#pip install -r myproject/requirements.txt
-
-# Resources
-# https://pythonhosted.org/PyPDF2/PdfFileWriter.html
-# https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/pdf_reference_archives/PDFReference.pdf
-
-# cloud function taking arguments: https://codelabs.developers.google.com/codelabs/cloud-functions-python-http#3
+from flask import Flask, render_template, jsonify, request
+from werkzeug.utils import secure_filename
 
 import fitz #need to install
 from spellchecker import SpellChecker #need to install
 from os import path
-# import json
+import ghhops_server as hs
 
-# import csv
-# import itertools
-# import re
-# from time import sleep
-import sys
-sys.path.append("C:\Python38\Lib\site-packages")
 
+
+# Imports the Google Cloud client library
+from google.cloud import storage
+
+# Instantiates a client
+storage_client = storage.Client()
+
+# The name for the new bucket
+bucket_name = "my-new-bucket"
+
+# Creates the new bucket
+bucket = storage_client.create_bucket(bucket_name)
+
+print(f"Bucket {bucket.name} created.")
+
+
+# pylint: disable=C0103
+app = Flask(__name__)
+hops = hs.Hops(app)
 
 def pdfLinker(pdfLinkFolder, pdfName, SearchText, excludeListInput ):
     # pdfLinkFolder = sys.argv[1]
@@ -58,12 +64,12 @@ def pdfLinker(pdfLinkFolder, pdfName, SearchText, excludeListInput ):
 
 
     excludeList = ['www.azahner.com', 'WWW.AZAHNER.COM', 'PURLIN', 'ZAHNER', 'AS-BUILT', 'ZEPP', 'Z-CLIP', 'TYP.','TYP', 'JAMBS', 'KERFED', 'SHEATHED', 'SHEATHING', 'HARDSCAPE', 'LAKEFLATO', '24X36"', 'DG04'] + excludeListInput
-    callouts = []
+    # callouts = []
     detailsNotFound = []
 
     ########
-    def misspelledWords ():
-        textList = page.get_text('text').split('\n')
+    # def misspelledWords ():
+    #     textList = page.get_text('text').split('\n')
 
     def foundDetail (page, searchTxt):
         
@@ -96,7 +102,7 @@ def pdfLinker(pdfLinkFolder, pdfName, SearchText, excludeListInput ):
         # only one page per many detail
         width = page.rect.width - 300
         height = page.rect.height - 200
-        rect = []
+        # rect = []
         pageNumber = -1
 
         wlist = page.get_text("words")  # make the word list
@@ -114,11 +120,11 @@ def pdfLinker(pdfLinkFolder, pdfName, SearchText, excludeListInput ):
 
 
 
-    def addLinkstoDetail():
-        print ('links added')
+    # def addLinkstoDetail():
+    #     print ('links added')
 
-    def notFound():
-        print ('details not found')
+    # def notFound():
+    #     print ('details not found')
 
 
 
@@ -142,7 +148,7 @@ def pdfLinker(pdfLinkFolder, pdfName, SearchText, excludeListInput ):
     ## -----------------------end functions -----------------------
     detpageNumber= -1
     detailRect = []
-    pages = []
+    # pages = []
     detialsFound = []
     detailLinkOkj = {}
 
@@ -235,7 +241,7 @@ def pdfLinker(pdfLinkFolder, pdfName, SearchText, excludeListInput ):
         # textToCheck = page.get_text('text')
         textListClean =[]
         new_string = []
-        updateMisspelled = []
+        # updateMisspelled = []
         textToIgnore = SearchText + excludeList
         textToIgnoreList = []
         textToIgnoreList2 = []
@@ -250,8 +256,8 @@ def pdfLinker(pdfLinkFolder, pdfName, SearchText, excludeListInput ):
             # print(eachtext)
             #  any("abc" in s for s in some_list):
             if any(s in eachtext for s in searchCharInit):
-                # print( eachtext)
-                x=1
+                print( eachtext)
+                # x=1
             else:
                 cleanedPageText.append(eachtext)
                 
@@ -329,8 +335,8 @@ def pdfLinker(pdfLinkFolder, pdfName, SearchText, excludeListInput ):
                         # print('is_integer', cleanstring)
                         cleanstring = ''
                 except:
-                    # print('notstring')
-                    x=1
+                    print('notstring')
+                    # x=1
             #remove exceptions 
             if len(cleanstring) > 3:
                 # print (cleanstring)
@@ -358,11 +364,21 @@ def pdfLinker(pdfLinkFolder, pdfName, SearchText, excludeListInput ):
 
 
 
-# sleep(10)
+# @app.route('/')
+# def hello():
+#     """Return a friendly HTTP greeting."""
+#     message = "It's running!"
 
-#-------------------------------------------------------------------------------------------register hops app as middleware
-app = Flask(__name__)
-hops = hs.Hops(app)
+#     """Get Cloud Run environment variables."""
+#     service = os.environ.get('K_SERVICE', 'Unknown service')
+#     revision = os.environ.get('K_REVISION', 'Unknown revision')
+
+#     return render_template('index.html',
+#         message=message,
+#         Service=service,
+#         Revision=revision)
+
+
 
 @hops.component(
     "/BELTED",
@@ -392,5 +408,7 @@ def BELTED(run,  pdfFolder, pdfNamer, details, ignorDetails):
     else:
         return 'waiting'
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+    # server_port = os.environ.get('PORT', '8080')
+    # app.run(debug=False, port=server_port, host='0.0.0.0')
     app.run()
